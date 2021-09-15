@@ -28,6 +28,8 @@ RUN mkdir -p /etc/nginx/html /var/www/html \
 
 EXPOSE 8443
 
+RUN apk update && apk add openssh
+
 USER app:app
 
 VOLUME /var/www

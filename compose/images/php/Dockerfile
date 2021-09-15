@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-buster
+FROM php:7.3-fpm-buster
 MAINTAINER Mark Shust <mark@shust.com>
 
 RUN apt-get update && apt-get install -y \
@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
   zip \
   procps
 
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-configure gd --with-freetype-dir --with-jpeg-dir
 
 RUN docker-php-ext-install \
   bcmath \
@@ -109,10 +109,25 @@ COPY bin/cronstart /usr/local/bin/
 RUN mkdir -p /etc/nginx/html /var/www/html /sock \
   && chown -R app:app /etc/nginx /var/www /usr/local/etc/php/conf.d /sock
 
+COPY 999-xdebug.ini /usr/local/etc/php/conf.d/
+
+COPY conf/cacert.pem /etc/ssl/certs/
+
+COPY conf/cacert.ini /usr/local/etc/php/conf.d/
+
+RUN apt-get install iputils-ping -y
+
+COPY key/id_rsa /root/.ssh/id_rsa
+
+RUN chmod 0600 /root/.ssh/id_rsa
+
 USER app:app
 
 VOLUME /var/www
 
 WORKDIR /var/www/html
 
+#ENTRYPOINT ["/bin/sh", "-c", "echo \"$(getent hosts host.docker.internal | awk '{ print $1 }') accproxy1.hanger.com\" >> /etc/hosts"]
+
 EXPOSE 9001
+EXPOSE 9003

@@ -15,6 +15,7 @@ services:
       - ./src/composer.json:/var/www/html/composer.json:cached
       - ./src/composer.lock:/var/www/html/composer.lock:cached
       - ./src/nginx.conf.sample:/var/www/html/nginx.conf:cached
+      - /Users/matiaspalacios/.ssh:/var/.ssh:cached
       #- ./src/auth.json:/var/www/html/auth.json:cached
       #- ./src/m2-hotfixes:/var/www/html/m2-hotfixes:cached
       #- ./src/patches:/var/www/html/patches:cached
@@ -29,8 +30,14 @@ services:
     volumes: *appvolumes
     # Linux only: host.docker.internal doesn't exist https://github.com/docker/for-linux/issues/264
     # Uncomment two lines below & replace IP with result of: docker run --rm alpine ip route | awk 'NR==1 {print $3}'
-    #extra_hosts:
+    extra_hosts:
+#      - "accproxy1.hanger.com:192.168.65.2"
+#      - "accproxy0.hanger.com:192.168.65.2"
+      - "accproxy1.hanger.com:127.0.0.1"
+      - "accproxy0.hanger.com:127.0.0.1"
     #  - "host.docker.internal:IP"
+    environment:
+          PHP_IDE_CONFIG: "serverName=stagingm2.spsco.com"
 
   mailcatcher:
     image: schickling/mailcatcher
